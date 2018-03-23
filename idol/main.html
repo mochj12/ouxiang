@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>定制卡专属投票通道</title>
+    <link type="text/css" href="//static.iqiyi.com/css/2018031818/exclusiveCard.css" rel="stylesheet" />
+</head>
+
+<body>
+    <!--用户信息-->
+    <div class="m-persdetail">
+        <div class="m-detail dn logoutarea">
+            <div class="m-persname">用户名称</div>
+            <div class="m-hidein">退出</div>
+        </div>
+        <div class="m-detail dn loginarea">
+            <div class="m-hidein">登录</div>
+        </div>
+        <div class="m-piao">
+            <a href="javascript:;" rseat="8321_vote_mycard" class="c-piao">我的定制卡<i class="c-Rarrow"></i></a>
+        </div>
+    </div>
+    <!--用户信息 end-->
+    <!--导师背景-->
+    <div class="m-tearchbak">
+    </div>
+    <!--导师背景 end-->
+    <!--投票区域-->
+    <div class="m-votewra">
+        <div class="m-gocardbwrap">
+            <!--购买定制卡按钮-->
+            <div class="m-gocardb">
+                <a href="javascript:;" rseat="8321_vote_buy" class="m-gocardba">购买定制卡，增加投票次数</a>
+                <div class="m-gshaw"></div>
+            </div>
+        </div>
+        <div class="m-listwra">
+            <div class="m-votenote">
+                <div class="m-havevote">剩余票数：<span class="c-num">0</span></div>
+                <div class="m-rulepop" rseat="8321_vote_info">投票规则</div>
+            </div>
+            <!--投票人列表-->
+            <ul class="m-voteperlist">
+            </ul>
+            <!--投票人列表-->
+            <div class="m-listerror dn">
+                <img src="http://www.qiyipic.com/common/fix/h5-ideolexe/voteeeor.png" alt="" class="c-listeorimg">
+                <div class="m-lodnote">加载失败</div>
+                <div class="m-aginnote">请刷新页面试试吧~</div>
+                <div class="m-linknew">点击刷新</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cover dn"></div>
+    <div class="m-pagecenwra dn" id="pop-toast">
+        <p class="m-textcontent"></p>
+    </div>
+
+    <div class="m-center m-popnote" id="pop-loading"><i class="c-load-icon loading-rotate"></i>正在加载中...</div>
+
+    <div class="m-center m-popnote dn" id="pop-voting"><i class="c-load-icon loading-rotate"></i>投票中...</div>
+
+    <!--规则说明 ，后期文案更新-->
+    <div class="m-pagecenwra dn" id="dialog-vote-guide">
+        <div class="m-commpsty">
+            <div class="m-ptitle">规则说明</div>
+            <ul class="m-notelist">
+                <li>1. 定制卡购买后需主动明星风云指数，是利用人脸识别技术统计出现视频中明星出现时长占比，并综合爱奇艺用户观看视频的次数和时长出，能客观准确地反映明星的热度</li>
+                <li>2. 榜单每15分钟更新计算一次星出现时长占比，并综合爱奇艺用户观看视频的次数和时长出，能客观准确地反映明星的热度星出现时长占</li>
+            </ul>
+            <div class="m-sureBwra">
+                <div class="m-suretext">我知道了</div>
+            </div>
+        </div>
+    </div>
+    <!--规则说明 ，后期文案更新 end-->
+
+    <div class="m-pagecenwra dn" id="dialog-vote-login">
+        <div class="m-commpsty">
+            <div class="m-psendcont m-pgetcont">
+                <p>请登录后参与投票</p>
+            </div>
+            <div class="m-options">
+                <a href="javascript:;" class="c-option cancelbtn">取消</a>
+                <a href="javascript:;" class="c-option confirmbtn">去登录</a>
+            </div>
+        </div>
+    </div>
+
+    <!--票数用完提醒-->
+    <div class="m-pagecenwra dn" id="dialog-vote-over">
+        <div class="m-commpsty">
+            <div class="m-siglenote m-sor">抱歉，您的专属投票次数用完了购买偶像练习生定制卡增加票数</div>
+            <div class="m-options m-optionsb">
+                <a href="javascript:;" class="c-option gotocard">买偶像练习生定制卡<div class="m-qipao">票数加成</div></a>
+                <a href="javascript:;" class="c-option cancelbtn">取消</a>
+            </div>
+        </div>
+    </div>
+    <!--票数用完提醒 end-->
+
+    <!--投票区域 end-->
+    <script type="text/velocity" id='voteList'>
+        #foreach($item in $list)
+        <li>
+            <div class="m-personface" style="background: url($!{item.picUrl}) no-repeat;background-size: cover;background-position: center center"></div>
+            <div class="c-name">$!{item.text}</div>
+            #if($!{item.status} == 1)
+                <div class="c-piao disable" data-oid="$!{item.oid}">未开始</div>
+            #elseif($!{item.status} == 2)
+                <div class="c-piao" data-oid="$!{item.oid}">投票</div>
+            #else
+                <div class="c-piao disable" data-oid="$!{item.oid}">已结束</div>
+            #end
+        </li>
+        #end
+    </script>
+    <script src="//res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script src="//static.qiyi.com/js/html5/js/lib/lib.2.0.5.min.js?sea1.2.min.js"></script>
+    <script src="//static.iqiyi.com/js/common/iqiyiJsBridge-2.10.10-min.js"></script>
+    <script src="//static.qiyi.com/js/common/app.min.js"></script>
+    <script src="//static.iqiyi.com/js/common/wxshare_h5.js"></script>
+    <script src="//security.iqiyi.com/static/cook/v1/cooksdk.js"></script>
+
+    <!-- <script src="//static.iqiyi.com/js/common/idol_votemain.js"></script> -->
+    <script src="js/idol_votemain.js"></script>
+</body>
+
+</html>

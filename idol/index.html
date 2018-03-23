@@ -1,0 +1,195 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta name="format-detection" content="telephone=no">
+    <title>我的定制卡</title>
+    <link type="text/css" href="//static.iqiyi.com/css/2018031818/exclusiveCard.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="m-commonwrap">
+        <!--权益说明-->
+        <div class="m-quitywrap">
+            <img src="http://www.qiyipic.com/common/fix/h5-ideolexe/equity.png" alt="" class="m-quityimg">
+            <div class="c-state specialGuide" rseat="8321_card_info">特权说明<span class="c-mark">?</span></div>
+            <div class="c-note">专属卡不限购买，多买多加哦！</div>
+        </div>
+        <!--权益说明 end-->
+        <!--已购买定制卡，可以去投票 ,未购买时加dn隐藏-->
+        <div class="m-havecard dn">
+            <!--定制卡次数与投票页链接-->
+            <div class="m-gopiao">
+                <div class="m-degree">您已拥有定制卡专属投票次数：<span class="m-num">0</span></div>
+                <div class="m-piao">
+                    <a href="javascript:;" rseat="8321_card_vote" class="c-piao">去投票<i class="c-Rarrow"></i></a>
+                </div>
+            </div>
+            <!--定制卡次数与投票页链接 end-->
+            <!--卡面展示区-->
+            <ul class="m-cardlist">
+            </ul>
+            <!--卡面展示区 end-->
+        </div>
+        <!--已购买定制卡，可以去投票 end-->
+        <!--吸底购买定制卡-->
+        <div class="m-gocustom dn">
+            <div class="m-truecontent">
+                <a href="javascript:;" rseat="8321_card_buy" class="c-gocustom">购买定制卡</a>
+            </div>
+        </div>
+        <!--吸底购买定制卡 end-->
+        <!--空页面状态-->
+        <div class="m-empty dn">
+            <img src="http://www.qiyipic.com/common/fix/h5-ideolexe/empty.png" alt="" class="c-emptyimg">
+            <div class="m-note">您暂无已购买的定制卡</div>
+            <a href="javascript:;" rseat="8321_card_buy" class="m-gocard">偶像练习生定制卡</a>
+            <a href="javascript:window.location.reload();" class="m-gocard refreshbtn dn">请点击刷新试试</a>
+        </div>
+        <!--空页面状态 end-->
+    </div>
+    <!--通用半透明蒙层，随用随取-->
+    <div class="cover dn"></div>
+    <!--网络错误类弹窗-->
+    <div class="m-pagecenwra dn" id="dialog-toast">
+        <p class="m-textcontent"></p>
+    </div>
+
+    <div class="m-center m-popnote" id="pop-loading"><i class="c-load-icon loading-rotate"></i>正在加载中...</div>
+
+    <!--权益说明 ，后期文案更新 end-->
+    <div class="m-pagecenwra dn" id="dialog-rigths">
+        <div class="m-commpsty">
+            <div class="m-ptitle">定制卡权益说明</div>
+            <ul class="m-notelist">
+                <li>1. 定制卡购买后须主动领取，可自己领用，也可转赠好友。</li>
+                <li>2. 每购买一张定制卡，购买者本人获得10票；分享给好友领取后，若领卡者未购买过会员，赠卡者可获得专属投票次数20票；若领卡者曾购买过VIP会员，赠卡者可获得专属投票次数10票；购买者本人领取，不额外增加票数。</li>
+                <li>3. 每张订单好友限领1张，本人可领取多张。每个用户领取的定制卡权益不得超过2年。</li>
+                <li>4. 【我的定制卡】页面可以查看、领取及转赠已购买的定制卡。定制卡转赠后须在3天有效期内领取，逾期将自动领取并充值到购买者本人账户。转赠时同一订单内的全部卡片将一并赠出，好友领取时亦可帮你转赠。为减少可能存在的财产损失风险，转赠时请谨慎。</li>
+                <li>5. 专属投票次数仅限在【专属投票通道】使用，不限制投票人数，所投票数会统计到投票总榜，请在节目中确认。</li>
+                <li>6. 活动有效期为即日起至4月6日22:00，活动过期后不再赠送票数，未使用票数作废，不可继续投票。爱奇艺拥有活动解释权。</li>
+            </ul>
+            <div class="m-sureBwra">
+                <div class="m-suretext">我知道了</div>
+            </div>
+        </div>
+    </div>
+
+    <!--权益说明 ，后期文案更新 end-->
+    <!--转增弹窗-->
+    <div class="m-pagecenwra dn" id="dialog-share">
+        <div class="m-commpsty">
+            <div class="m-psendtle">是否转增？</div>
+            <div class="m-psendcont">
+                <p>即将转赠<span class="c-violet">0</span>张定制vip卡</p>
+                <p>卡片被领取后你将获得专属投票次数</p>
+            </div>
+            <div class="m-options">
+                <a href="javascript:;" class="c-option cancelbtn">取消</a>
+                <a href="javascript:;" class="c-option confirmbtn">确认</a>
+            </div>
+        </div>
+    </div>
+    <!--转增弹窗 end-->
+    <!--领取弹窗-->
+    <div class="m-pagecenwra dn" id="dialog-get">
+        <div class="m-commpsty">
+            <div class="m-psendcont m-pgetcont">
+                <p>即将领取一张定制vip卡，并充值到当前账户，是否领取？</p>
+            </div>
+            <div class="m-options">
+                <a href="javascript:;" class="c-option cancelbtn">取消</a>
+                <a href="javascript:;" class="c-option confirmbtn">确认</a>
+            </div>
+        </div>
+    </div>
+    <!--领取弹窗 end-->
+    <!--领取成功弹窗-->
+    <div class="m-pagecenwra dn" id="dialog-get-result">
+        <div class="m-commpsty">
+            <div class="m-rightimg">
+                <img src="//www.qiyipic.com/common/fix/h5-ideolexe/sureright.png" alt="">
+                <div class="m-sustext">领取成功!</div>
+            </div>
+            <div class="m-sureBwra">
+                <div class="m-suretext">我知道了</div>
+            </div>
+        </div>
+    </div>
+    <!--领取成功弹窗 end-->
+
+    <div class="m-pagecenwra dn" id="dialog-get-result-over">
+        <div class="m-commpsty">
+            <div class="m-siglenote m-sha">您已领取了超过2年的会员啦，
+                <br/>分享给好友领取可增加投票次数哦</div>
+            <div class="m-sureBwra">
+                <div class="m-suretext">我知道了</div>
+            </div>
+        </div>
+    </div>
+
+    <!--礼品卡领完提醒-->
+    <div class="m-pagecenwra dn" id="dialog-get-result-late">
+        <div class="m-commpsty">
+            <div class="m-late">晚来一步，礼品卡被领完啦</div>
+            <div class="m-sureBwra">
+                <div class="m-suretext">我知道了</div>
+            </div>
+        </div>
+    </div>
+
+    <!--微信引导提示弹层-->
+    <div class="m-popsh dn" id="pop_weixin">
+        <div class="m-popshimg"></div>
+        <div class="m-sclose"></div>
+    </div>
+    <!--微信引导提示弹层 end-->
+
+    <!--浏览器赠送提醒-->
+    <div class="m-pagecenwra dn" id="pop_browser">
+        <div class="m-commpsty">
+            <div class="m-siglenote m-sha">请您用浏览器分享功能<br/>将链接分享给好友哦~</div>
+            <div class="m-sureBwra">
+                <div class="m-suretext">我知道了</div>
+            </div>
+        </div>
+    </div>
+    <!--浏览器赠送提醒 end-->
+
+    <script type="text/velocity" id='cardList'>
+        #foreach($item in $list)
+        <li>
+            <!--左图-->
+            <div class="m-Limg" style=" background: url($!{item.coverImage}) no-repeat;background-size: cover;background-position:center center;">
+                #if($!{item.total} > 1)
+                <div class="m-numget">$!{item.total}张</div> #end
+            </div>
+            <!--左图 end-->
+            <!--右文-->
+            <div class="m-textdetail">
+                <div class="m-cardname">$!{item.coverTitle}</div>
+                <div class="m-cardprice">¥$!{item.orderPrice}<span class="c-gerting">$!{item.remain}张待领取</span></div>
+                <div #if($!{item.remain}) class="m-whoget" #else class="m-whoget dn" #end>
+                    <div class="m-get m-receive-gift" data-giftcardno="$!{item.giftCardNo}" rseat="8321_card_get" data-remain="$!{item.remain}">自己领取</div>
+                    <div class="m-get m-fri" rseat="8321_card_share" data-remain="$!{item.remain}" data-giftcardno="$!{item.giftCardNo}" data-cardtitle="$!{item.coverTitle}">赠送好友
+                        <div class="m-qipao">票数加成</div>
+                    </div>
+                </div>
+                <div #if(!$!{item.remain}) class="m-whogeted" #else class="m-whogeted dn" #end>已全部领完</div>
+            </div>
+            <!--右文 end-->
+        </li>
+        #end
+    </script>
+    <script src="//res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script src="//static.qiyi.com/js/html5/js/lib/lib.2.0.5.min.js?sea1.2.min.js"></script>
+    <script src="//static.iqiyi.com/js/common/iqiyiJsBridge-2.10.10-min.js"></script>
+    <script src="//static.qiyi.com/js/common/app.min.js"></script>
+    <script src="//static.iqiyi.com/js/common/wxshare_h5.js"></script>
+    <!-- <script src="//static.iqiyi.com/js/common/idol_my_gift.js"></script> -->
+    <script src="js/idol_my_gift.js"></script>
+</body>
+
+</html>

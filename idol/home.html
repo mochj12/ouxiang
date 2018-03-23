@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+    <meta name="format-detection" content="telephone=no">
+    <title>我的礼品卡</title>
+    <link type="text/css" href="//static.iqiyi.com/css/20180210/newyearcard-2018.css" rel="stylesheet"/>
+    <style>
+        body {
+            background: #f2e0c6;
+        }
+
+        .notCards_card {
+            width: 100%;
+            height: 2rem;
+            position: absolute;
+            top: 1.8rem;
+
+        }
+
+        .notCards_card p {
+            width: 100%;
+            font-size: 0.2rem;
+            text-align: center;
+            color: #6d7174;
+            font-family: "Microsoft YaHei";
+
+        }
+
+        .notCards_card a {
+
+            background: #fff;
+            text-align: center;
+            line-height: 0.4rem;
+            width: .685rem;
+            height: .39rem;
+            border-radius: .05rem;
+            color: #8c8c8c;
+            position: absolute;
+            left: 1.5rem;
+            top: 0.8rem;
+        }
+
+        .notCards_card a {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .tiShi_wenzi {
+
+        }
+
+        .tiShi_wenzi p {
+            width: 100%;
+            text-align: center;
+            color: #6d7174;
+            font-family: "Microsoft YaHei";
+            font-size: .14rem;
+            line-height: .22rem;
+        }
+
+        .chinanet-fc {
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            position: fixed;
+            top: 0vw;
+            left: 0vw;
+            z-index: 10;
+            opacity: 0.8;
+            z-index: 99999;
+        }
+
+        .chinanet-fc-tb {
+            display: block;
+            content: "";
+            background: url(//pic0.qiyipic.com/common/20180121/xxxxtu.png) no-repeat scroll center top/100% auto;
+            position: fixed;
+            left: 2.1rem;
+            top: 0vw;
+            width: 1.43rem;
+            height: 2.51rem;
+            z-index: 11;
+        }
+
+        .picImgcar {
+            background: url(//pic1.qiyipic.com/common/20180212/notcarimg.png) no-repeat scroll center top/100% auto;
+            width: 1rem;
+            height: 2.30rem;
+            position: absolute;
+            left: 1.3rem;
+            top: 0.4rem;
+
+        }
+
+        .newyearcard-wrap.m-newyearcard-my .m-newyearcard-my-list .m-newyearcard-my-item .m-newyearcard-item-img .m-newyearcard-jia {
+            top: 1.7rem;
+            right: .2rem;
+        }
+
+        .newyearcard-wrap.m-newyearcard-my .m-newyearcard-my-list .m-newyearcard-my-item .m-newyearcard-item-img .m-cardoriginalprice {
+            font-size: .12rem;
+            font-weight: 700;
+            color: #fff;
+            position: absolute;
+            top: 1.9rem;
+            right: .2rem;
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+
+<body>
+<div class="newyearcard-wrap m-newyearcard-my">
+    <div class="m-newyearcard-my-list dn">
+        <div class="tiShi_wenzi"><p>苹果用户礼品卡到账可能会有延迟,<br>请您稍后查看已购礼品卡</p></div>
+    </div>
+    <div class="picImgcar dn"></div>
+    <!-- 无礼品卡的结构Android-->
+
+    <div class="notCards_card andNotCard dn">
+        <p>您还没有礼品卡,请稍后刷新</p>
+        <a href="javascript:void(0)">刷新</a>
+    </div>
+
+    <!-- 无礼品卡的结构IOS-->
+    <div class="notCards_card iosNotCard dn">
+        <p>您还没有礼品卡。苹果用户礼品卡到账可能会延迟；请您耐心等候，稍后查询。</p>
+        <a href="javascript:void(0)">刷新</a>
+    </div>
+    <div class="chinanet-fc dn">
+        <div class="chinanet-fc-tb "></div>
+    </div>
+</div>
+<!-- 在浏览器中打开提醒浮层  -->
+<div class="cover hide"></div>
+<div class="m-popup-info hide">
+    <div class="c-popup-title">
+        <p>请在微信或QQ中打开连接</p>
+    </div>
+    <a href="javascript:void(0)" class="c-popup-btn-normal">我知道了</a>
+</div>
+</body>
+<script type="text/javascript" src="//res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script type="text/javascript" src="//static.iqiyi.com/js/html5/js/lib/lib.2.0.0.min.js"></script>
+<script type="text/javascript" src="//static.iqiyi.com/js/common/wxshare_h5.js"></script>
+<script type="text/javascript" src="//static.iqiyi.com/js/common/iqiyiJsBridge.min.js"></script>
+<script type="text/javascript" src="//static.iqiyi.com/js/common/h5pingback.min.js"></script>
+<script type="text/javascript" src="//static.iqiyi.com/js/h5common/pageDebug.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var bReq = false;
+        var ua = navigator.userAgent.toLowerCase();
+        var isClient = false;
+        if (/iqiyi/i.test(ua)) {
+            isClient = true;
+        }
+        var isIos = true;
+        if (ua.indexOf('android') >= 0) {
+            isIos = false;
+        }
+        var shareComp = {
+            shareData: {
+                title: '',
+                desc: '爱奇艺祝您春节快乐！VIP独享海量会员大片，春节剧不停！',
+                shareType: 1,
+                imgUrl: 'http://static.iqiyi.com/ext/common/lipinka.jpeg',
+                link: ''
+            },
+            init: function () {
+                if (wx && ua.indexOf('micromessenger') >= 0) {
+                    configWX('wx85e5e7f44c7cc50e', function () {
+                        wx.ready(function () {
+                            wx.hideAllNonBaseMenuItem();
+                            wx.showMenuItems({
+                                menuList: ['menuItem:share:appMessage', 'menuItem:share:timeline', 'menuItem:share:qq']
+                            });
+                        });
+                    });
+                }
+            },
+            share: function (title, url) {
+                this.shareData.title = title;
+                this.shareData.link = url;
+                if (iqiyi && ua.indexOf('iqiyi') >= 0) {
+                    iqiyi.share(this.shareData);
+                } else if (wx && ua.indexOf('micromessenger') >= 0) {
+                    wx.onMenuShareAppMessage(this.shareData);
+                    wx.onMenuShareTimeline(this.shareData);
+                    wx.onMenuShareQQ(this.shareData);
+                }
+            }
+        };
+        var authCookie = '';
+        var uid = '';
+        var deviceID = '';
+        if (isClient) {
+            iqiyi.ready(function (result) {
+                if (!result) {
+                    console.log('iqiyi.ready没有result');
+                    return;
+                }
+                iqiyi.init(function (result) {
+                    if (result && result.data) {
+                        uid = result.data.P00003 || '';
+                        authCookie = result.data.P00001 || '';
+                        deviceID = result.data.deviceID;
+                        if (authCookie && authCookie.length > 10) {
+                            getCardContent();
+                        } else {
+                            iqiyi.loadNativePage({
+                                page: 'login',
+                                returnUrl: location.href
+                            });
+                        }
+                    } else {
+                        console.log('iqiyi.init失败');
+                    }
+                });
+            });
+        } else {
+            uid = $.cookie.get('P00003') || '';
+            authCookie = $.cookie.get('P00001') || '';
+            if (authCookie && authCookie.length > 10) {
+                getCardContent();
+            } else {
+                location.href = '//m.iqiyi.com/user.html?redirect_url=' + encodeURIComponent(location.href) + '#baseLogin';
+                return;
+            }
+            shareComp.init();
+        }
+
+        var cardImgMap = {
+            '3360': '//www.qiyipic.com/common/fix/newyearcard-images/card-newyear.png',
+            '3361': '//www.qiyipic.com/common/fix/newyearcard-images/card-ox.png',
+            '3362': '//www.qiyipic.com/common/fix/newyearcard-images/card-wyf.png',
+            '3363': '//www.qiyipic.com/common/fix/newyearcard-images/card-zly.png',
+            '3364': '//www.qiyipic.com/common/fix/newyearcard-images/card-lyb.png',
+            '3365': '//www.qiyipic.com/common/fix/newyearcard-images/card-newyear.png',
+            '3366': '//www.qiyipic.com/common/fix/newyearcard-images/card-ox.png',
+            '3367': '//www.qiyipic.com/common/fix/newyearcard-images/card-wyf.png',
+            '3368': '//www.qiyipic.com/common/fix/newyearcard-images/card-zly.png',
+            '3369': '//www.qiyipic.com/common/fix/newyearcard-images/card-lyb.png'
+        };
+
+        var lastList = null;
+
+        function equal(obj1, obj2) {
+            for (var i in obj1) {
+                if (obj1.hasOwnProperty(i) && obj2.hasOwnProperty(i) && obj1[i] === obj2[i]) {
+                    continue;
+                }
+                return false;
+            }
+            return true;
+        }
+
+        function diff(list) {
+            if (lastList === null) {
+                lastList = list;
+                return true;
+            }
+            if (lastList.length !== list.length) {
+                return true;
+            }
+            for (var i = 0, length = list.legnth; i < length; i++) {
+                if (!equal(lastList[i], list[i])) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        var pTimeout = null;
+
+        function polling() {
+            if (isIos) {
+                pTimeout = setTimeout(getCardContent, 2000);
+            }
+        }
+
+        function showNoCard() {
+            if ($('.m-newyearcard-my-item').length < 1) {
+                $('.picImgcar').removeClass('dn');
+                if (isIos && isClient) {
+                    $('.iosNotCard').removeClass('dn');
+                } else {
+                    $('.andNotCard').removeClass('dn');
+                }
+            }
+        }
+
+        function hideNoCard() {
+            $('.picImgcar').addClass('dn');
+            $('.notCards_card').addClass('dn');
+        }
+
+        function getCardContent() {
+            if (bReq) {
+                return;
+            }
+            bReq = true;
+            //authCookie = 'f1ArDk8NC0p4cIU7x4wOCLw2SXdm1adm1P0Mkm28dPm1WjyGem3b3v0yO1Gtep5bv9KEZHp9a';
+            getJson('//act.vip.iqiyi.com/marketing/query/giftCard/list.action?P00001=' + authCookie + '&deviceID=' + deviceID, function (res) {
+                if (res.code === 'A00000' && res.data.code === 'A00000') {
+                    var list = res.data.data.list;
+                    if (list.length < 1) {
+                        showNoCard();
+                    } else {
+                        if (diff(list)) {
+                            var cardListStr = '';
+                            list.forEach(function (v, i) {
+                                var imgUrl = '//www.qiyipic.com/common/fix/newyearcard-images/card-newyear.png';
+                                if (v.cardNo in cardImgMap) {
+                                    imgUrl = cardImgMap[v.cardNo];
+                                }
+
+                                var statusClass = 'shareCard';
+                                if (v.status == 1) {
+                                    statusClass = 'btn-ok';
+                                }
+                                var statusText = '送亲友';
+                                if (v.status == 1) {
+                                    statusText = '已领取';
+                                }
+
+                                var cardText = '月卡 ￥16';
+                                var normalCardText = '原价 ￥30';
+                                if (v.cardNo == 3360 || v.cardNo == 3361 || v.cardNo == 3362 || v.cardNo == 3363 || v.cardNo == 3364) {
+                                    if (v.amount == 365) {
+                                        cardText = '年卡 ￥118';
+                                        normalCardText = '原价 ￥360';
+                                    } else {
+                                        cardText = '月卡 ￥16';
+                                    }
+                                } else {
+                                    if (v.amount == 365) {
+                                        cardText = '年卡 ￥148';
+                                        normalCardText = '原价 ￥360';
+                                    } else {
+                                        cardText = '月卡 ￥18';
+                                    }
+                                }
+
+                                var cardStr = '<div class="m-newyearcard-my-item" >' +
+                                    '<div class="m-newyearcard-item-img">' +
+                                    '<img src="' + imgUrl + '" alt="" class="c-card-img">' +
+                                    '<div class="m-newyearcard-jia">' + cardText + '</div>' +
+                                    '<div class="m-cardoriginalprice">' + normalCardText + '</div>' +
+                                    '</div>' +
+                                    '<div class="m-newyearcard-item-btn ' + statusClass + '" data-redNo="' + v.redNo + '" data-amount="' + v.amount + '" data-cardNo="' + v.cardNo + '">' +
+                                    '<div class="" rseat="802111_give">' + statusText + '</div>' +
+                                    '</div>' +
+                                    '</div>';
+                                cardListStr += cardStr;
+                            });
+                            if (!isIos) {
+                                $('.tiShi_wenzi').addClass('dn');
+                            }
+                            $('.m-newyearcard-my-item').remove();
+                            $('.m-newyearcard-my-list').prepend(cardListStr).removeClass('dn');
+                            $('.m-newyearcard-my-list .shareCard div').attr('rseat', '802111_give');
+                            hideNoCard();
+                        }
+                    }
+                } else {
+                    showNoCard();
+                }
+                bReq = false;
+                polling();
+            }, function () {
+                showNoCard();
+                bReq = false;
+                polling();
+            });
+        }
+
+        var actCode = {
+            '3360': 'bd3587984c6a5588',
+            '3361': 'acf0d3fa6726a0a3',
+            '3362': '93526cbae5600b5f',
+            '3363': 'a7a69102b73de31d',
+            '3364': 'be9459b33af4fc27',
+            '3365': '9c9b1b228b1bf633',
+            '3366': '97f013a2bb12f70a',
+            '3367': 'af9a2b6463f754a7',
+            '3368': 'b9a9431b831cb05b',
+            '3369': '867e3b4388484dab'
+        };
+        $('.m-newyearcard-my-list').on('click', '.shareCard', function () {
+            var redNo = $(this).attr('data-redNo');
+            var amount = $(this).attr('data-amount');
+            var cardNo = $(this).attr('data-cardNo');
+            //var shareTitle = JSON.parse($.cookie.get('P00002')).nickname + '送你一张价值';
+            var shareTitle = '我为您定制了一张爱奇艺VIP会员';
+            var pay = 1;
+            if (parseInt(amount) === 365) {
+                /*if (isIos) {
+      shareTitle += '148元的爱奇艺VIP会员年卡，速领！';
+      } else {
+      shareTitle += '118元的爱奇艺VIP会员年卡，速领！';
+      }*/
+                //shareTitle += '360元的爱奇艺VIP会员年卡，速领！';
+                shareTitle += '年卡，祝狗年大吉！';
+                pay = 12;
+            } else {
+                /*if (isIos) {
+      shareTitle += '18元的爱奇艺VIP会员月卡，速领！';
+      } else {
+      shareTitle += '16元的爱奇艺VIP会员月卡，速领！';
+      }*/
+                //shareTitle += '30元的爱奇艺VIP会员月卡，速领！';
+                shareTitle += '月卡，祝狗年大吉！';
+            }
+            var url = 'https://vip.iqiyi.com/giftRreceive.html?orderCode=' + redNo + '&pay=' + pay + '&actCode=' + actCode[cardNo];
+            console.log('title to share: ' + shareTitle);
+            console.log('url to share: ' + url);
+            shareComp.share(shareTitle, url);
+            if (!isClient) {
+                // 分享浮层
+                if (ua.indexOf('micromessenger') >= 0 || ua.indexOf('qq') >= 0) {
+                    $('.chinanet-fc').removeClass('dn').one('click', function () {
+                        $('.chinanet-fc').addClass('dn');
+                    });
+                } else {
+                    $('.cover').removeClass('hide');
+                    $('.m-popup-info').removeClass('hide');
+                }
+            }
+        });
+
+        function getJson(url, cb, cb2) {
+            $.ajax({
+                url: url,
+                timeout: 5e3,
+                dataType: "jsonp",
+                jsonp: "callback",
+                success: function (res) {
+                    cb(res);
+                },
+                error: function (e, t) {
+                    if (typeof cb2 === 'function') {
+                        cb2();
+                        console.log(e);
+                    }
+                }
+            });
+        }
+
+        $('.andNotCard a,.iosNotCard a').click(function () {
+            clearTimeout(pTimeout);
+            getCardContent();
+        });
+
+        $('.m-popup-info a').click(function () {
+            $('.cover').addClass('hide');
+            $('.m-popup-info').addClass('hide');
+        });
+
+        iqiyi.ready(function (result) {
+            iqiyi.hideMenu();
+        });
+    });
+
+</script>
+</html>
