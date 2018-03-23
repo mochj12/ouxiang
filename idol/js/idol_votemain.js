@@ -408,17 +408,17 @@
 
     var H5_APP = {
 
-        //pageUrl: 'http://vip.iqiyi.com/idol-gift-list.html', // 我的定制卡
+        cardPageUrl: 'http://vip.iqiyi.com/idol-gift-list.html', // 我的定制卡
 
-        //votePageUrl: 'http://vip.iqiyi.com/idol-gift-vote.html', // 投票页面
+        pageUrl: 'http://vip.iqiyi.com/idol-gift-vote.html', // 投票页面
 
-        //buyCardPageUrl: 'http://vip.iqiyi.com/ouxiangBuy.html', // 购买定制卡
+        buyCardPageUrl: 'http://vip.iqiyi.com/ouxiangBuy.html', // 购买定制卡
 
-        pageUrl: 'http://new.cms.iqiyi.com/page!preview.action?pageId=8842712', // 投票页面
+        //pageUrl: 'http://new.cms.iqiyi.com/page!preview.action?pageId=8842712', // 投票页面
 
-        cardPageUrl: 'http://new.cms.iqiyi.com/page!preview.action?pageId=8836303', // 定制卡页面
+        //cardPageUrl: 'http://new.cms.iqiyi.com/page!preview.action?pageId=8836303', // 定制卡页面
 
-        buyCardPageUrl: 'http://new.cms.iqiyi.com/page!preview.action?pageId=8853328', // 购买定制卡
+        //buyCardPageUrl: 'http://new.cms.iqiyi.com/page!preview.action?pageId=8853328', // 购买定制卡
 
         shareData: {
             title: '买偶像练习生定制会员卡，一起为pick的练习生投票！',
