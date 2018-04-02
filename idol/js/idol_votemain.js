@@ -223,13 +223,17 @@
 ~(function(window) {
 
     var CONFIG_INTERFACE = {
-        VOTE_ID: '0766348178010407', //0965795220010386
+        VOTE_ID: '0965795220010386', //0965795220010386
         VOTE_CODE: '91ae85420c254091',
-        GET_VOTE: '//act.vip.iqiyi.com/api/process.action',
+        GET_VOTE: '//act.vip.iqiyi.com/api/process-jsonp.action',
         GET_VOTE_LIST: '//vote.i.iqiyi.com/eagle/outer/get_votes',
         GET_USER_INFO: '//passport.iqiyi.com/apis/user/info.action?authcookie=' + $.cookie.get('P00001'),
-        GET_VOTE_CHANCE: '//act.vip.iqiyi.com/api/process.action?interfaceCode=9c7471947a9d3922',
+        GET_VOTE_CHANCE: '//act.vip.iqiyi.com/api/process-jsonp.action?interfaceCode=9c7471947a9d3922',
     };
+
+    if (location.protocol.indexOf('https') >= 0) {
+        CONFIG_INTERFACE.GET_VOTE_LIST = '//vote-i.iqiyi.com/eagle/outer/get_votes';
+    }
 
     var deferredReuest = (function() {
         var timeout = 10 * 1000;
@@ -408,24 +412,18 @@
 
     var H5_APP = {
 
-        cardPageUrl: 'http://vip.iqiyi.com/idol-gift-list.html', // 我的定制卡
+        cardPageUrl: '//vip.iqiyi.com/idol-gift-list.html', // 我的定制卡
 
         pageUrl: 'http://vip.iqiyi.com/idol-gift-vote.html', // 投票页面
 
-        buyCardPageUrl: 'http://vip.iqiyi.com/ouxiangBuy.html', // 购买定制卡
-
-        //pageUrl: 'http://new.cms.iqiyi.com/page!preview.action?pageId=8842712', // 投票页面
-
-        //cardPageUrl: 'http://new.cms.iqiyi.com/page!preview.action?pageId=8836303', // 定制卡页面
-
-        //buyCardPageUrl: 'http://new.cms.iqiyi.com/page!preview.action?pageId=8853328', // 购买定制卡
+        buyCardPageUrl: '//vip.iqiyi.com/ouxiangBuy.html', // 购买定制卡
 
         shareData: {
             title: '买偶像练习生定制会员卡，一起为pick的练习生投票！',
             desc: '爱奇艺偶像练习生定制VIP卡，购卡并转赠后可获得专属投票次数，每张最多30票',
             shareType: 1,
             imgUrl: 'http://pic1.qiyipic.com/ext/common/share.jpeg',
-            link: location.href || ''
+            link: 'http://vip.iqiyi.com/idol-gift-vote.html'
         },
 
         velocityTpl: null,
@@ -433,6 +431,8 @@
         voteChance: 0,
 
         voteAction: false,
+
+        voteAgain: true,
 
         appInfo: {},
 
@@ -460,7 +460,7 @@
             user.getUserInfo().then(function(data) {
 
                 if (data) {
-                    $('.logoutarea').removeClass('dn').find('.m-persname').text(data.nickname);
+                    $('.logoutarea').removeClass('dn').find('.m-persname').text('您好，' + data.nickname);
                 }
                 else {
                     $('.loginarea').removeClass('dn');
@@ -477,11 +477,13 @@
                     $('.logoutarea .m-hidein').addClass('dn')
                 }
 
-                deferredReuest.get(CONFIG_INTERFACE.GET_VOTE_CHANCE, {P00001: user.getAuthcookie()}).then(function(data){
+                deferredReuest.jsonp(CONFIG_INTERFACE.GET_VOTE_CHANCE, {P00001: user.getAuthcookie()}).then(function(data){
 
                     if (typeof data == 'string') {
                         data = JSON.parse(data);
                     }
+
+                    data = data.data;
 
                     var code = data.code;
                     if (code == 'A00000') {
@@ -551,18 +553,22 @@
 
             $('.m-votewra .m-rulepop').on('click', function(event) {
 
-                $('.cover').removeClass('dn')
+
                 $('#dialog-vote-guide').removeClass('dn');
 
                 $('#dialog-vote-guide .m-suretext').one('click', function(event) {
-                    $('.cover').addClass('dn')
                     $('#dialog-vote-guide').addClass('dn');
                 });
             });
 
-            $('.m-hidein').on('touchend', function(event) {
+            $('.loginout').on('touchend', function(event) {
                 event.preventDefault();
                 user.logout();
+            });
+
+            $('.loginbtn').on('touchend', function(event) {
+                event.preventDefault();
+                user.goToLogin();
             });
 
             $('.c-piao').on('click', function(event) {
@@ -601,11 +607,12 @@
                     return;
                 }
 
-                if ($that.hasClass('requesting') || !$('#pop-voting').hasClass('dn')) {
+                if ($that.hasClass('requesting') || !$('#pop-voting').hasClass('dn') || !self.voteAgain) {
                     return;
                 }
 
                 $('#pop-voting').removeClass('dn');
+                self.voteAgain = false;
 
                 $that.addClass('requesting');
 
@@ -619,16 +626,15 @@
                     device_id: self.appInfo.deviceId || ''
                 };
 
-                deferredReuest.get(CONFIG_INTERFACE.GET_VOTE, params).then(function(data){
+                deferredReuest.jsonp(CONFIG_INTERFACE.GET_VOTE, params).then(function(data){
                     if (typeof data == 'string') {
                         data = JSON.parse(data);
                     }
 
-                    var code = 'A00000' || data.code;
+                    data = data.data;
+                    var code = data.code;
                     var msg = data.msg;
                     var daysurpluschance = data.data.daysurpluschance;
-
-                    console.log(data)
 
                     if (code == 'A00000') {
 
@@ -655,6 +661,7 @@
                 }).always(function(){
                     $that.removeClass('requesting')
                     $('#pop-voting').addClass('dn');
+                    self.frequenceControl();
                 });
             });
 
@@ -667,13 +674,11 @@
                 self.velocity = new $.plugins.Velocity($('#voteList').html());
             }
 
-            deferredReuest.get(CONFIG_INTERFACE.GET_VOTE_LIST, {vids: CONFIG_INTERFACE.VOTE_ID}).then(function(data){
+            deferredReuest.jsonp(CONFIG_INTERFACE.GET_VOTE_LIST, {vids: CONFIG_INTERFACE.VOTE_ID}).then(function(data){
 
                 if (typeof data == 'string') {
                     data = JSON.parse(data);
                 }
-
-                console.log(data)
 
                 var code = data.code;
                 if (code == 'A00000' && data.data[0]) {
@@ -721,10 +726,7 @@
                 item.status = data.status;
             });
 
-            data.list.sort(function(a, b){
-                return a -b;
-            });
-            console.log(data, 'hahhaahhaha')
+
             return data.list;
         },
 
@@ -733,9 +735,11 @@
             var content = self.velocity.render({list: data});
 
             $('.m-voteperlist').html(content);
+
         },
+
         toast: function(text, delay) {
-            var delay = delay || 3 * 1000;
+            var delay = delay || 1 * 1000;
             var text = text || '投票失败了！请稍后重试';
 
             $('#pop-toast').removeClass('dn').find('p').text(text)
@@ -743,14 +747,14 @@
                 $('#pop-toast').addClass('dn');
             }, delay)
         },
+
         showDialog: function(){
             var self = this;
 
-            $('.cover').removeClass('dn')
+
             $('#dialog-vote-over').removeClass('dn');
 
             $('#dialog-vote-over .cancelbtn').one('click', function(event) {
-                $('.cover').addClass('dn')
                 $('#dialog-vote-over').addClass('dn');
             });
 
@@ -759,19 +763,28 @@
                 window.location.href = self.buyCardPageUrl;
             });
         },
+
         showDialogLogin: function(){
-            $('.cover').removeClass('dn')
+
             $('#dialog-vote-login').removeClass('dn');
 
             $('#dialog-vote-login .cancelbtn').one('click', function(event) {
-                $('.cover').addClass('dn')
+
                 $('#dialog-vote-login').addClass('dn');
             });
 
             $('#dialog-vote-login .confirmbtn').one('click', function(event) {
                 user.goToLogin()
             });
+        },
+
+        frequenceControl: function(){
+            var self = this;
+            setTimeout(function(){
+                self.voteAgain = true;
+            }, 1000 * 1.5)
         }
+
     };
 
     // 初始化

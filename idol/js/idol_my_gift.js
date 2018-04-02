@@ -224,9 +224,10 @@
 
     var CONFIG_INTERFACE = {
         GET_GIFT_LIST: '//act.vip.iqiyi.com/marketing/query/gift-card/list.action',
-        GET_VOTE_CHANCE: '//act.vip.iqiyi.com/api/process.action?interfaceCode=9c7471947a9d3922',
+        GET_VOTE_CHANCE: '//act.vip.iqiyi.com/api/process-jsonp.action?interfaceCode=9c7471947a9d3922',
         GET_USER_INFO: '//passport.iqiyi.com/apis/user/info.action?authcookie=' + $.cookie.get('P00001'),
-        GET_GIFT_CARD: '//act.vip.iqiyi.com/marketing/gift-card/get.action'
+        GET_GIFT_CARD: '//act.vip.iqiyi.com/marketing/gift-card/get.action',
+        CALL_APP: 'iqiyi://mobile/webview?url='
     };
 
     var deferredReuest = (function() {
@@ -259,6 +260,18 @@
                     dataType: 'jsonp',
                     timeout: timeout || 0
                 });
+            },
+            postCross: function (url, params) {
+                return $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: params || {},
+                    crossDomain: true,
+                    dataType: 'json',
+                    beforeSend: function(xhr) {
+                        xhr.withCredentials = true;
+                    },
+                });
             }
         };
         return request;
@@ -278,8 +291,9 @@
         isLogin: function() {
             var p00002 = $.cookie.get('P00002');
             var p00003 = $.cookie.get('P00003');
+            var p00001 = $.cookie.get('P00001');
             return (this.isNotEmpty(p00002) && p00002 !== 'deleted') &&
-                (this.isNotEmpty(p00003) && p00003 !== 'deleted');
+                (this.isNotEmpty(p00003) && p00003 !== 'deleted') && (this.isNotEmpty(p00001) && p00001 !== 'deleted');
         },
         isNotEmpty: function(value) {
             return value !== '' && value !== null;
@@ -395,6 +409,10 @@
             } else {
                 window.location.href = "//m.iqiyi.com/user.html?redirectUrl=" + encodeURIComponent(location.href)
             }
+        },
+        logout: function() {
+            var href = encodeURIComponent(window.location.href);
+            window.location.href = '//passport.iqiyi.com/user/logout.php?url=' + href + '&logoutcb=Q.__logoutcb';
         }
     };
 
@@ -409,23 +427,15 @@
 
         pageUrl: 'http://vip.iqiyi.com/idol-gift-list.html', // 我的定制卡
 
-        votePageUrl: 'http://vip.iqiyi.com/idol-gift-vote.html', // 投票页面
+        votePageUrl: '//vip.iqiyi.com/idol-gift-vote.html', // 投票页面
 
-        buyCardPageUrl: 'http://vip.iqiyi.com/ouxiangBuy.html', // 购买定制卡
+        buyCardPageUrl: '//vip.iqiyi.com/ouxiangBuy.html', // 购买定制卡
 
         shareCardPageUrl: 'http://vip.iqiyi.com/ouxiang.html', //分享领取页
 
-        //pageUrl: 'http://new.cms.iqiyi.com/page!preview.action?pageId=8836303', // 我的定制卡
-
-        //votePageUrl: 'http://new.cms.iqiyi.com/page!preview.action?pageId=8842712', // 投票页面
-
-        //buyCardPageUrl: 'http://new.cms.iqiyi.com/page!preview.action?pageId=8853328', // 购买定制卡
-
-        //shareCardPageUrl: 'http://new.cms.iqiyi.com/page!preview.action?pageId=8843693', //分享领取页
-
         shareData: {
             title: '买偶像练习生定制会员卡，一起为pick的练习生投票！',
-            desc: '爱奇艺偶像练习生定制VIP卡，购卡并转赠后可获得专属投票次数，每张最多30票',
+            desc: '爱奇艺偶像练习生定制VIP会员卡，一起为pick的练习生投票吧！',
             shareType: 1,
             imgUrl: 'http://pic1.qiyipic.com/ext/common/share.jpeg',
             link: location.href || ''
@@ -454,17 +464,33 @@
 
             user.init();
 
-            user.getUserInfo().then(function(data) {}, function(data) {});
+            user.getUserInfo().then(function(data) {
+
+                if (data) {
+                    $('.logoutarea').removeClass('dn').find('.m-persname').text('您好，' + data.nickname);
+                }
+                else {
+                    $('.loginarea').removeClass('dn');
+                }
+            }, function(data) {
+                $('.loginarea').removeClass('dn');
+            });
 
             if (user.isLogin()) {
 
-                deferredReuest.get(CONFIG_INTERFACE.GET_VOTE_CHANCE, { P00001: user.getAuthcookie() }).then(function(data) {
+                $('logoutarea').removeClass('dn');
+
+                if (h5_ua.iqiyiH5_APP) {
+                    $('.logoutarea .m-hidein').addClass('dn')
+                }
+
+                deferredReuest.jsonp(CONFIG_INTERFACE.GET_VOTE_CHANCE, { P00001: user.getAuthcookie() }).then(function(data) {
 
                     if (typeof data == 'string') {
                         data = JSON.parse(data);
                     }
 
-                    console.log(data)
+                    data = data.data;
 
                     var code = data.code;
                     if (code == 'A00000') {
@@ -505,13 +531,23 @@
 
             $('.specialGuide').on('click', function(event) {
 
-                $('.cover').removeClass('dn')
+
                 $('#dialog-rigths').removeClass('dn');
 
                 $('#dialog-rigths .m-suretext').one('click', function(event) {
-                    $('.cover').addClass('dn')
+
                     $('#dialog-rigths').addClass('dn');
                 });
+            });
+
+            $('.loginout').on('touchend', function(event) {
+                event.preventDefault();
+                user.logout();
+            });
+
+            $('.loginbtn').on('touchend', function(event) {
+                event.preventDefault();
+                user.goToLogin();
             });
 
             $('.c-piao').on('click', function(event) {
@@ -551,89 +587,13 @@
                 self.velocity = new $.plugins.Velocity($('#cardList').html());
             }
 
-            deferredReuest.get(CONFIG_INTERFACE.GET_GIFT_LIST, { P00001: user.getAuthcookie(), actCode: 'b0b82d8c897acd79' }).then(function(data) {
-
-                /*data = {
-
-                    "code": "A00000",
-
-                    "msg": "成功",
-
-                    "data": {
-
-                        "list":
-
-                            [
-
-                                {
-
-                                    "giftCardNo": "201802108080893989", //礼品卡标识
-
-                                    "amount": 30, //单张卡包含的VIP天数，单位：天，月卡：30，季卡：90，年卡：365
-
-                                    "coverTitle": "xxx定制礼品卡", //卡面标题
-
-                                    "coverImage": "http://www.qiyipic.com/common/fix/newyearcard-images/card-newyear.png", //卡面图片
-
-                                    "coverPrice": 1600, //卡面金额，单位：分
-
-                                    "total": 5, //总数
-
-                                    "receive": 1, //已领取数量
-
-                                    "date": "2018-03-16 18:03:02" //购买时间
-
-                                },
-                                {
-
-                                    "giftCardNo": "201802108080893989", //礼品卡标识
-
-                                    "amount": 30, //单张卡包含的VIP天数，单位：天，月卡：30，季卡：90，年卡：365
-
-                                    "coverTitle": "xxx定制礼品卡", //卡面标题
-
-                                    "coverImage": "http://www.qiyipic.com/common/fix/newyearcard-images/card-newyear.png", //卡面图片
-
-                                    "coverPrice": 1600, //卡面金额，单位：分
-
-                                    "total": 5, //总数
-
-                                    "receive": 1, //已领取数量
-
-                                    "date": "2018-03-16 18:03:02" //购买时间
-
-                                },
-                                {
-
-                                    "giftCardNo": "201802108080893989", //礼品卡标识
-
-                                    "amount": 30, //单张卡包含的VIP天数，单位：天，月卡：30，季卡：90，年卡：365
-
-                                    "coverTitle": "xxx定制礼品卡", //卡面标题
-
-                                    "coverImage": "http://www.qiyipic.com/common/fix/newyearcard-images/card-newyear.png", //卡面图片
-
-                                    "coverPrice": 1600, //卡面金额，单位：分
-
-                                    "total": 5, //总数
-
-                                    "receive": 1, //已领取数量
-
-                                    "date": "2018-03-16 18:03:02" //购买时间
-
-                                }
-
-                            ]
-
-                    }
-
-                };*/
+            deferredReuest.jsonp(CONFIG_INTERFACE.GET_GIFT_LIST, { P00001: user.getAuthcookie(), actCode: 'b0b82d8c897acd79' }).then(function(data) {
 
                 if (typeof data == 'string') {
                     data = JSON.parse(data);
                 }
 
-                console.log(data)
+                data = data.data;
 
                 var code =  data.code;
                 if (code == 'A00000') {
@@ -647,6 +607,7 @@
                         $('.m-havecard').addClass('dn');
                         $('.m-empty').removeClass('dn');
                         $('.m-gocustom').addClass('dn');
+                        $('.m-persdetail .m-piao').removeClass('dn')
                     }
                 } else if (code == 'Q00304') {
                     user.goToLogin();
@@ -656,6 +617,7 @@
                     $('.m-havecard').addClass('dn');
                     $('.m-empty').removeClass('dn');
                     $('.m-gocustom').addClass('dn');
+                    $('.m-persdetail .m-piao').removeClass('dn')
                 }
             },function(){
                 self.toast('哇哦，遇到一点问题，再试一下吧')
@@ -664,6 +626,8 @@
                 $('.m-empty .m-gocard').addClass('dn');
                 $('.m-empty .refreshbtn').removeClass('dn')
                 $('.m-gocustom').addClass('dn');
+
+                $('.m-persdetail .m-piao').removeClass('dn')
             }).always(function(){
                 $('#pop-loading').addClass('dn')
             })
@@ -684,17 +648,17 @@
             var content = self.velocity.render({ list: data });
 
             $('.m-cardlist').html(content)
+
         },
 
         showConfirmGet: function($self, giftNo) {
             var self = this;
 
-            $('.cover').removeClass('dn')
             $('#dialog-get').removeClass('dn');
 
             $('#dialog-get .cancelbtn').one('click', function(event) {
                 /* Act on the event */
-                $('.cover').addClass('dn')
+
                 $('#dialog-get').addClass('dn');
             });
 
@@ -716,7 +680,7 @@
 
                     var code = data.code;
                     var msg = data.msg;
-                    console.log(data)
+
                     if (code == 'A00000') {
 
                         var hasLeft = data.data.hasLeft;
@@ -727,7 +691,12 @@
                             $self.parent().hide().next().removeClass('dn');
 
                         }
-                        $self.parents('.m-textdetail').find('.c-gerting').text(hasLeft + '张待领取');
+
+                        if(!hasLeft){
+                            $self.parents('.m-textdetail').find('.c-gerting').addClass('dn')
+                        }else {
+                            $self.parents('.m-textdetail').find('.c-gerting').text(hasLeft + '张待领取');
+                        }
 
                         self.getResult(1);
                     }
@@ -763,89 +732,116 @@
                 prefix += '&';
             }
 
-            var url = self.shareCardPageUrl + prefix + 'giftCardNo=' + giftNo;
-            var title = '送你一张'+ cardTitle +'，一起为pick的练习生投票！';
+            var url = self.shareCardPageUrl + prefix + 'orderCode=' + giftNo;
+            var title = '送你一张'+ cardTitle;
 
             if (!h5_ua.iqiyiH5_APP) {
-                if (h5_ua.weixin || h5_ua.qq) {
-                    scrollAction = false;
-                    $('#pop_weixin').removeClass('dn')
-                    $('#pop_weixin .m-sclose').one('touchend', function(event) {
-                        event.preventDefault();
-                        $('#pop_weixin').addClass('dn')
-                        scrollAction = true;
-                    });
+                if (h5_ua.weixin) {
+                    if (remain == 1) {
+                        scrollAction = false;
+                        $('#pop_weixin').removeClass('dn')
+                        $('#pop_weixin .m-sclose').one('touchend', function(event) {
+                            event.preventDefault();
+                            $('#pop_weixin').addClass('dn')
+                            scrollAction = true;
+                        });
+                    }
+                    else {
+                        $('#dialog-share .c-violet').text(remain);
+                        $('#dialog-share').removeClass('dn');
+
+                        $('#dialog-share .cancelbtn').one('click', function(event) {
+                            /* Act on the event */
+                            $('#dialog-share').addClass('dn');
+                        });
+
+                        $('#dialog-share .confirmbtn').off();
+                        $('#dialog-share .confirmbtn').one('click', function(event) {
+                            $('#dialog-share').addClass('dn');
+
+                            scrollAction = false;
+                            $('#pop_weixin').removeClass('dn')
+                            $('#pop_weixin .m-sclose').one('touchend', function(event) {
+                                event.preventDefault();
+                                $('#pop_weixin').addClass('dn')
+                                scrollAction = true;
+                            });
+                        });
+                    }
                 }
                 else {
-                    $('.cover').removeClass('dn')
+
                     $('#pop_browser').removeClass('dn')
                     $('#pop_browser .m-suretext').one('click', function(event) {
                         event.preventDefault();
-                        $('.cover').addClass('dn')
-                        $('#pop_browser').addClass('dn')
+
+                        $('#pop_browser').addClass('dn');
+                        self.goToAPP()
                     });
                 }
+                self.share(title, url);
             }
             else {
-                $('.cover').removeClass('dn')
-                $('#dialog-share .c-violet').text(remain);
-                $('#dialog-share').removeClass('dn');
-
-                $('#dialog-share .cancelbtn').one('click', function(event) {
-                    /* Act on the event */
-                    $('.cover').addClass('dn')
-                    $('#dialog-share').addClass('dn');
-                });
-
-                $('#dialog-share .confirmbtn').off();
-                $('#dialog-share .confirmbtn').one('click', function(event) {
-                    /* Act on the event */
-                    $('.cover').addClass('dn')
-                    $('#dialog-share').addClass('dn');
+                if (remain == 1) {
                     self.share(title, url);
-                });
+                }else {
+                    $('#dialog-share .c-violet').text(remain);
+                    $('#dialog-share').removeClass('dn');
+
+                    $('#dialog-share .cancelbtn').one('click', function(event) {
+                        /* Act on the event */
+                        $('#dialog-share').addClass('dn');
+                    });
+
+                    $('#dialog-share .confirmbtn').off();
+                    $('#dialog-share .confirmbtn').one('click', function(event) {
+                        $('#dialog-share').addClass('dn');
+                        self.share(title, url);
+                    });
+                }
+
             }
+
         },
 
         getResult: function(flag, msg){
             var self = this;
 
-            console.log(flag,msg)
             if (flag == 1) {
-                $('.cover').removeClass('dn');
+
                 $('#dialog-get-result').removeClass('dn');
 
                 $('#dialog-get-result .m-suretext').one('click', function(event) {
-                    $('.cover').addClass('dn');
+
                     $('#dialog-get-result').addClass('dn');
                 });
             }else if(flag == 2){
-                $('.cover').removeClass('dn');
+
                 $('#dialog-get-result-over').removeClass('dn');
 
                 $('#dialog-get-result-over .m-suretext').one('click', function(event) {
-                    $('.cover').addClass('dn');
+
                     $('#dialog-get-result-over').addClass('dn');
                 });
             }
             else if (flag == 3) {
-                $('.cover').removeClass('dn');
+
                 $('#dialog-get-result-late').removeClass('dn');
 
                 $('#dialog-get-result-late .m-suretext').one('click', function(event) {
-                    $('.cover').addClass('dn');
+
                     $('#dialog-get-result-late').addClass('dn');
                 });
             }
             else {
-                $('.cover').addClass('dn');
+
                 $('#dialog-get-result').addClass('dn');
                 self.toast(msg);
             }
 
         },
         toast: function(text, delay) {
-            var delay = delay || 3 * 1000;
+            var delay = delay || 1 * 1000;
 
             var text = text || '领取失败，请您稍后重试';
 
@@ -855,6 +851,22 @@
             setTimeout(function(){
                 $('#dialog-toast').addClass('dn');
             }, delay)
+        },
+        goToAPP: function(){
+            var self = this;
+            var url = CONFIG_INTERFACE.CALL_APP + location.href + '&title=' + decodeURIComponent(document.title) +'&ftype=27&subtype=498';
+
+            setTimeout(function(){
+                if ($.os.ios) {
+                    window.location.href = 'https://itunes.apple.com/us/app/%E7%88%B1%E5%A5%87%E8%89%BA/id393765873?mt=8'
+                }
+                else if ($.os.android) {
+                    window.location.href = 'http://mbdapp.iqiyi.com/j/ap/iqiyi_1439.apk'
+                }
+            },1500)
+
+            window.location.href = url;
+
         }
     };
 
